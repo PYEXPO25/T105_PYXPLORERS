@@ -1,0 +1,35 @@
+import streamlit as st
+from gtts import gTTS
+import os
+import tempfile
+import base64
+
+# Streamlit UI
+st.title("🔊 Text to Speech Converter")
+st.markdown("Enter text in Indian regional languages, and listen to the AI-generated voice.")
+
+# Language Selection
+languages = {
+    "English": "en", "Hindi": "hi", "Tamil": "ta", "Telugu": "te", 
+    "Bengali": "bn", "Marathi": "mr", "Gujarati": "gu", "Malayalam": "ml", 
+    "Punjabi": "pa", "Odia": "or", "Urdu": "ur"
+}
+language = st.selectbox("Choose Language:", list(languages.keys()))
+
+# Text Input for TTS
+text = st.text_area("Enter text to convert to speech:", "")
+
+if st.button("🔊 Convert to Speech"):
+    if text.strip():
+        tts = gTTS(text=text, lang=languages[language], slow=False)
+        temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".mp3")
+        tts.save(temp_file.name)
+        
+        # Play audio
+        with open(temp_file.name, "rb") as audio_file:
+            audio_bytes = audio_file.read()
+            st.audio(audio_bytes, format="audio/mp3")
+
+        os.unlink(temp_file.name)
+    else:
+        st.warning("Please enter text first!")
