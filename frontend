@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nagish App</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: url('sample.jpeg') no-repeat center center fixed;
+            background-size: cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            position: relative;
+        }
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: inherit;
+            filter: blur(10px);
+            z-index: -1;
+        }
+        .container {
+            max-width: 800px; width: 100%; padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px; backdrop-filter: blur(15px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            text-align: center;
+        }
+        .hidden { display: none; }
+        
+        /* Full-screen animated intro */
+        .logo-intro {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #000;
+            z-index: 20;
+            animation: fadeOut 3s forwards 3s;
+        }
+        .logo-intro img {
+            width: 300px;
+            height: auto;
+        }
+        @keyframes fadeOut {
+            0% { opacity: 1; }
+            100% { opacity: 0; visibility: hidden; }
+        }
+        button {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: #fff; border: none; padding: 12px 24px;
+            font-size: 1rem; border-radius: 25px;
+            cursor: pointer; margin: 10px;
+        }
+        input[type="text"] {
+            padding: 10px;
+            font-size: 1rem;
+            border-radius: 5px;
+            width: 100%;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Animated Intro Screen -->
+    <div class="logo-intro">
+        <img src="animated_logo final.gif" alt="Nagish Logo">
+    </div>
+
+    <!-- Transcription Page -->
+    <div id="transcription-page" class="container hidden">
+        <h1>Nagish</h1>
+        <p>Real-time Transcription for the Deaf and Hard-of-Hearing</p>
+        <button onclick="showNextPage()">Next</button>
+    </div>
+
+    <!-- Next Page -->
+    <div id="next-page" class="container hidden">
+        <h1>Choose Call Option</h1>
+        <p>Select one of the options below to proceed:</p>
+        <button onclick="makeCall()">Make Call</button>
+        <button onclick="joinCall()">Join Call</button>
+    </div>
+
+    <!-- Make Call Page -->
+    <div id="make-call-page" class="container hidden">
+        <h1>Select Conversion Option</h1>
+        <button onclick="alert('Text to Speech selected')">Text to Speech</button>
+        <button onclick="alert('Speech to Text selected')">Speech to Text</button>
+        <button onclick="alert('Sign Language to Text selected')">Sign Language to Text</button>
+    </div>
+
+    <!-- Join Call Page -->
+    <div id="join-call-page" class="container hidden">
+        <h1>Enter the Code to Join the Call</h1>
+        <input type="text" id="call-code" placeholder="Enter Call Code">
+        <button onclick="joinWithCode()">Join Call</button>
+    </div>
+
+    <script>
+        // Ensure the intro fades out, then show the first page (transcription page)
+        setTimeout(() => {
+            document.querySelector('.logo-intro').style.display = 'none';
+            document.getElementById('transcription-page').classList.remove('hidden');
+        }, 2000); // Wait 2 seconds (1s animation + 1s delay)
+
+        // Function to navigate to the next page
+        function showNextPage() {
+            // Hide the current page (transcription page)
+            document.getElementById('transcription-page').classList.add('hidden');
+            
+            // Show the next page
+            document.getElementById('next-page').classList.remove('hidden');
+        }
+
+        // Function for the "Make Call" button
+        function makeCall() {
+            // Hide the current page (next page)
+            document.getElementById('next-page').classList.add('hidden');
+            
+            // Show the make call options page
+            document.getElementById('make-call-page').classList.remove('hidden');
+        }
+
+        // Function for the "Join Call" button
+        function joinCall() {
+            // Hide the current page (next page)
+            document.getElementById('next-page').classList.add('hidden');
+            
+            // Show the join call page
+            document.getElementById('join-call-page').classList.remove('hidden');
+        }
+
+        // Function to handle the "Join Call" input
+        function joinWithCode() {
+            const code = document.getElementById('call-code').value;
+            if (code) {
+                alert("Joining the call with code: " + code);
+            } else {
+                alert("Please enter a valid code.");
+            }
+        }
+    </script>
+
+</body>
+</html>
