@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Text to Speech</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f0f8ff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .container {
+      background-color: #ffffff;
+      border-radius: 10px;
+      padding: 30px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      width: 80%;
+      max-width: 600px;
+    }
+    h1 { color: #4caf50; }
+    select, textarea {
+      width: 100%;
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 16px;
+      margin: 10px 0;
+    }
+    textarea { height: 150px; resize: none; }
+    button {
+      padding: 12px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      margin: 10px;
+      background-color: #4caf50;
+      color: white;
+      transition: background-color 0.3s;
+    }
+    button:hover { background-color: #45a049; }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Text to Speech</h1>
+    <select id="languageSelect">
+      <option value="en-US">English (US)</option>
+      <option value="hi-IN">Hindi (India)</option>
+      <option value="ta-IN">Tamil (India)</option>
+      <option value="te-IN">Telugu (India)</option>
+      <option value="bn-IN">Bengali (India)</option>
+      <option value="mr-IN">Marathi (India)</option>
+      <option value="gu-IN">Gujarati (India)</option>
+      <option value="ml-IN">Malayalam (India)</option>
+      <option value="pa-IN">Punjabi (India)</option>
+      <option value="or-IN">Odia (India)</option>
+      <option value="ur-IN">Urdu (India)</option>
+    </select><br>
+
+    <textarea id="textInput" placeholder="Enter your text here..."></textarea><br>
+    <button onclick="convertTextToSpeech()">Convert to Speech</button><br>
+  </div>
+
+  <script>
+    function convertTextToSpeech() {
+      const text = document.getElementById('textInput').value;
+      const language = document.getElementById('languageSelect').value;
+
+      if (text.trim() === '') {
+        alert('Please enter some text!');
+        return;
+      }
+
+      const speechSynthesis = window.speechSynthesis;
+      const utterance = new SpeechSynthesisUtterance(text);
+      
+      const voices = speechSynthesis.getVoices();
+      let voice = voices.find(v => v.lang === language);
+      
+      if (!voice) {
+        voice = voices[0]; // Default fallback voice
+      }
+      
+      utterance.voice = voice;
+      utterance.pitch = 1; // Normal pitch
+      utterance.rate = 1;  // Normal speed
+
+      speechSynthesis.speak(utterance);
+    }
+
+    window.speechSynthesis.onvoiceschanged = () => {
+      console.log("Voices Loaded!");
+    };
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign Language to Text</title>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/handpose"></script>
+  <script src="https://cdn.jsdelivr.net/npm/fingerpose"></script>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f0f8ff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      flex-direction: column;
+    }
+    .container {
+      background-color: #ffffff;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      width: 80%;
+      max-width: 600px;
+    }
+    h1 {
+      color: #4caf50;
+    }
+    video {
+      width: 100%;
+      border-radius: 10px;
+    }
+    button, select {
+      padding: 12px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      margin: 5px;
+      transition: background-color 0.3s;
+      background-color: #ff9800;
+      color: white;
+    }
+    #outputText {
+      font-size: 20px;
+      font-weight: bold;
+      margin-top: 10px;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Sign Language to Text</h1>
+
+  <div class="container">
+    <video id="video" autoplay playsinline></video><br>
+    <button onclick="startRecognition()">Start Recognition</button>
+    <select id="languageSelect" onchange="setLanguage(this.value)">
+      <option value="en">English</option>
+      <option value="hi">Hindi</option>
+      <option value="ta">Tamil</option>
+      <option value="ml">Malayalam</option>
+      <option value="te">Telugu</option>
+      <option value="kn">Kannada</option>
+    </select>
+    <div id="outputText">Detected Text: </div>
+  </div>
+
+  <script>
+    let video = document.getElementById('video');
+    let outputText = document.getElementById('outputText');
+    let model;
+    let gestureEstimator;
+    let selectedLanguage = 'en';
+
+    const gestureMapping = {
+      'thumbs_up': { en: 'Good', hi: 'अच्छा', ta: 'நன்று', ml: 'നല്ലത്', te: 'మంచిది', kn: 'ಒಳ್ಳೆಯದು' },
+      'victory': { en: 'Peace', hi: 'शांति', ta: 'அமைதி', ml: 'ശാന്തി', te: 'శాంతి', kn: 'ಶಾಂತಿ' },
+      'ok': { en: 'Okay', hi: 'ठीक', ta: 'சரி', ml: 'ശരി', te: 'సరే', kn: 'ಸರಿ' },
+      'fist': { en: 'Stop', hi: 'रुको', ta: 'நிறுத்து', ml: 'നിര്‍ത്തുക', te: 'ఆపు', kn: 'ನಿಲ್ಲಿಸಿ' },
+      'open_hand': { en: 'Hello', hi: 'नमस्ते', ta: 'வணக்கம்', ml: 'ഹലോ', te: 'హలో', kn: 'ಹಲೋ' }
+    };
+
+    async function loadModel() {
+      model = await handpose.load();
+      gestureEstimator = new fp.GestureEstimator([
+        fp.Gestures.ThumbsUpGesture,
+        fp.Gestures.VictoryGesture,
+      ]);
+      console.log("Handpose Model & Gesture Recognizer Loaded!");
+    }
+
+    async function startVideo() {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      video.srcObject = stream;
+    }
+
+    function setLanguage(language) {
+      selectedLanguage = language;
+      outputText.innerText = `Detected Text: Language set to ${language}`;
+    }
+
+    async function startRecognition() {
+      if (!model) {
+        alert("Model is loading. Please wait...");
+        return;
+      }
+
+      setInterval(async () => {
+        const predictions = await model.estimateHands(video);
+        if (predictions.length > 0) {
+          let estimatedGestures = await gestureEstimator.estimate(predictions[0].landmarks, 8.5);
+          if (estimatedGestures.gestures.length > 0) {
+            let bestGesture = estimatedGestures.gestures.reduce((a, b) => (a.score > b.score ? a : b));
+            let recognizedText = gestureMapping[bestGesture.name] ? gestureMapping[bestGesture.name][selectedLanguage] : "Unknown Sign";
+            outputText.innerText = "Detected Text: " + recognizedText;
+          }
+        }
+      }, 1000);
+    }
+
+    loadModel();
+    startVideo();
+  </script>
+
+</body>
+</html>
